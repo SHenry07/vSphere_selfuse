@@ -1,0 +1,14 @@
+stages:
+    - build
+    - test
+    - review
+    - dast
+
+
+build:
+code_quality:
+container_scanning:
+dependency_scanning:
+license_management:
+sast:static application
+test:

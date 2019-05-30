@@ -1,0 +1,23 @@
+image: python:3.7.3-alpine3.9
+services:
+    - postgres:9.6
+
+variables:
+    POSTGRES_DB: clone
+
+cache:
+  paths:
+  - ~/.cache/pip/
+
+before_script:
+    - apk add --no-cache postgresql-client postgresql-devel*
+    - python -V
+    - pip install -r requirements.txt
+
+deploy:
+    variables:
+       DATABASE_URL: "postgresql://postgres:mysteel@192.168.100.227:5432/$POSTGRES_DB"
+    script:
+       - python manage.py runserver 0.0.0.0:8000
+    tags:
+       - deploy_236

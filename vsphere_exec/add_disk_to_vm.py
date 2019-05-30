@@ -16,24 +16,7 @@ and I have not yet worked through that
 from pyVmomi import vim
 from pyVmomi import vmodl
 
-from .get_args import *
-
-
-
-def get_obj(content, vimtype, name):
-    obj = None
-    container = content.viewManager.CreateContainerView(
-        content.rootFolder, vimtype, True)
-    for c in container.view:
-        if c.name == name:
-            obj = c
-            break
-    return obj
-
-
-def add_disk(vm_name, si, disk_size, disk_type='thin'):
-        content = si.RetrieveContent()
-        vm = get_obj(content, [vim.VirtualMachine], vm_name)
+def add_disk(vm,si,disk_size, disk_type='thin'):
         spec = vim.vm.ConfigSpec()
         # get all disks on a VM, set unit_number to the next available
         unit_number = 0
@@ -44,8 +27,7 @@ def add_disk(vm_name, si, disk_size, disk_type='thin'):
                 if unit_number == 7:
                     unit_number += 1
                 if unit_number >= 16:
-                    print ("we don't support this many disks")
-                    return
+                    return ("we don't support this many disks")
             if isinstance(dev, vim.vm.device.VirtualSCSIController):
                 controller = dev
         # add disk here
@@ -69,27 +51,3 @@ def add_disk(vm_name, si, disk_size, disk_type='thin'):
         return("%sGB disk added to %s" % (disk_size, vm.config.name))
 
 
-def main():
-    args = get_args.get_args()
-
-    # connect this thing
-    si = get_args.service_con()
-    # disconnect this thing
-
-    vm = None
-    if args.uuid:
-        search_index = si.content.searchIndex
-        vm = search_index.FindByUuid(None, args.uuid, True)
-    elif args.vm_name:
-        content = si.RetrieveContent()
-        vm = get_obj(content, [vim.VirtualMachine], args.vm_name)
-
-    if vm:
-        add_disk(vm, si, args.disk_size, args.disk_type)
-    else:
-        print("VM not found")
-
-
-# start this thing
-if __name__ == "__main__":
-    main()

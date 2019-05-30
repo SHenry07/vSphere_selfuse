@@ -25,7 +25,7 @@ SECRET_KEY = 'c^#vrcw(kxu(20+j6s3#balhe5bruv42+spb^k*(o2+#pp6t5q'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.100.227']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -76,11 +76,11 @@ WSGI_APPLICATION = 'clone.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'clone',
         'USER': 'postgres',
         'PASSWORD': 'mysteel',
-        'HOST': '127.0.0.1',
+        'HOST': '192.168.100.227',
         'PORT': '5432',
     }
 }

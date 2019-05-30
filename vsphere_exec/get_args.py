@@ -1,4 +1,5 @@
 from pyVim.connect import SmartConnectNoSSL, Disconnect
+from pyVmomi import vim
 import atexit
 import argparse
 import getpass
@@ -135,3 +136,33 @@ def service_con(host,user,pwd):
     atexit.register(Disconnect,si)
 
     return si
+def get_obj(content, vimtype, name):
+    obj = None
+    container = content.viewManager.CreateContainerView(
+        content.rootFolder, vimtype, True)
+    for c in container.view:
+        if c.name == name:
+            obj = c
+            break
+    return obj
+
+def Get_Vm(si,vm_name=None,vm_ip=None,vm_uuid=None):
+    search_index = si.content.searchIndex
+
+    # without exception find managed objects using durable identifiers that the
+    # search index can find easily. This is much better than caching information
+    # that is non-durable and potentially buggy.
+
+    vm = None
+    if vm_uuid:
+        vm = search_index.FindByUuid(None, vm_uuid, True, True)
+    elif vm_ip:
+        vm = search_index.FindByIp(None, vm_ip, True)
+    elif vm_name:
+        content = si.RetrieveContent()
+        vm = get_obj(content, [vim.VirtualMachine], vm_name)
+
+    if not vm:
+        return(u"Could not find a virtual machine to examine.")
+
+    return vm 

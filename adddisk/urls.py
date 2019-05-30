@@ -12,5 +12,6 @@ urlpatterns =[
     path('<str:vsphere_comment>/',views.machines,name='vmlist'),
 
     # ex /adddisk/9f/name
-    path('<str:vsphere_comment>/<str:vm_name>/',views.details,name='vmdetail'),
+    #path('<str:vsphere_comment>/<str:vm_name>/',views.details,name='vmdetail'),
+    path('<str:vsphere_comment>/details/',views.details,name='vmdetail'),
 ]

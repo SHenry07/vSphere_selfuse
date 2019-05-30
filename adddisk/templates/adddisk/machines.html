@@ -1,7 +1,26 @@
 <h1><a href="{% url 'adddisk:index' %}">{{ vm_ips.vsphere_comment }} </a></h1>
-<ul>
-    {% for vm in vm_ips.vmdetails_set.all %}
+
+<form name="查询VM" action="{% url 'adddisk:vmlist' vm_ips.vsphere_comment %}" method="post">{% csrf_token %}
+    <label for="ipaddress">输入IP地址</label>
+    <input type="str" name="ipaddress" size=10>
+    <label for="vmname">或输入主机实例名字</label>
+    <input type="str" name="vmname" size=10>
+    <input type="submit" value="搜索">
+    <!--通过API直接获取数据-->
+    {% for name,value in result1.items %}
+    <li>{{ name }}: {{ value }}</li>{% endfor %}
+    {% for name,value in result2.items %}
+    <li>{{ name }}: {{ value }}</li>{% endfor %}
+    <<!--<form name="扩容硬盘" method="post">{% csrf_token %}-->
+        <label for="uuid">输入上面的instance UUID</label>
+        <input type="str" name="uuid">
+        <label for="size">输入需要扩容的容量只需要数字如:添加60G输入60</label>
+        <input type="int" name="size" size=3>
+        <input type="submit" value="增加容量">
+</form>
+{{ adddiskaction }}
+<!--从数据库中获取数据-->
+<ol>{% for vm in vm_ips.vmdetails_set.all %}
     <!-- <li>{{ vm.vm_name }}</li> -->
-    <li><a href="{% url 'adddisk:vmdetail' vm.datacenter_id vm.vm_name %}">{{ vm.vm_name }}</a></li>
-{% endfor %}
-</ul>
+    <li><a href="{% url 'adddisk:vmdetail' vm.datacenter_id  %}">{{ vm.vm_name }}</a>
+    </li>{% endfor %}</ol>%
