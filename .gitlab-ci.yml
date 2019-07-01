@@ -1,23 +1,35 @@
-image: python:3.7.3-alpine3.9
-services:
-    - postgres:9.6
-
-variables:
-    POSTGRES_DB: clone
-
-cache:
-  paths:
-  - ~/.cache/pip/
-
 before_script:
-    - apk add --no-cache postgresql-client postgresql-devel*
-    - python -V
-    - pip install -r requirements.txt
+  - 'docker login -u sunheng -p D0r@em0n 192.168.100.235'
+
+stages:
+  - build
+  - deploy
+
+build:
+  stage: build
+  script:
+    - 'docker build -t 192.168.100.235/cmdb/cmdb:$CI_COMMIT_REF_NAME .'
+    - docker push 192.168.100.235/cmdb/cmdb:$CI_COMMIT_REF_NAME
+  only:
+    - tags
+  tags:
+    - deploy_236_shell
+  cache:
+    paths:
+      - .cache/
 
 deploy:
-    variables:
-       DATABASE_URL: "postgresql://postgres:mysteel@192.168.100.227:5432/$POSTGRES_DB"
-    script:
-       - python manage.py runserver 0.0.0.0:8000
-    tags:
-       - deploy_236
+  stage: deploy
+  script:
+    - 'docker ps -a | grep cmdbdeploy && docker stop cmdbdeploy && docker rm cmdbdeploy'
+    - docker run -it -d --always --name cmdbdeploy -p 80:8000 cmdb/cmdb:$CI_COMMIT_REF_NAME
+  environment:
+    name: production
+    url: 192.168.100.236/adddisk
+  after_script:
+    - docker rmi $( docker images -q -f dangling=true)
+    - date
+  dependencies:
+    - build
+  tags:
+    - deploy_236_shell
