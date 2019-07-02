@@ -1,11 +1,13 @@
 FROM python:3.7.3-alpine3.9
 
 
-RUN apk add --no-cache postgresql-client postgresql-dev gcc musl-dev
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories; \
+apk update; \
+apk add --no-cache postgresql-client postgresql-dev gcc musl-dev
 
 RUN mkdir -p /apply/cmdb
 ADD ./ /apply/cmdb/
-RUN pip --no-cache-dir install -r /apply/cmdb/requirements.txt
+RUN pip --no-cache-dir install -r /apply/cmdb/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
 
 WORKDIR /apply/cmdb/
