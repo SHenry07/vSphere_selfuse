@@ -17,6 +17,6 @@ from django.contrib import admin
 from django.urls import include, path
 
 urlpatterns = [
-    path('adddisk/', include('adddisk.urls')),
+    path('clonevm/', include('clonevm.urls')),
     path('admin/', admin.site.urls),
 ]

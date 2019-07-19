@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}获取主机{% endblock %}
+
+{% block css %}{% endblock %}
+
+{% block breadcrumb %}
+<!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        添加硬盘
+        <small>disk list</small>
+      <a href="{% url 'clonevm:index' %}">{{ vm_ips.vsphere_comment }} </a>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> 主页</a></li>
+        <li class="active">硬盘扩容</li>
+      </ol>
+
+    </section>
+{% endblock %}
+
+{% block content %}
+    <form name="查询VM" action="{% url 'clonevm:vmlist' vm_ips.vsphere_comment %}" method="post">
+    {% csrf_token %}
+    <label for="ipaddress">输入IP地址</label>
+    <input type="str" name="ipaddress" size=10>
+    <label for="vmname">或输入主机实例名字</label>
+    <input type="str" name="vmname" size=10>
+    <input type="submit" value="搜索">
+    <!--通过API直接获取数据-->
+    {% for name,value in result1.items %}
+    <li>{{ name }}: {{ value }}</li>{% endfor %}
+    {% for name,value in result2.items %}
+    <li>{{ name }}: {{ value }}</li>{% endfor %}
+    <<!--<form name="扩容硬盘" method="post">{% csrf_token %}-->
+        <label for="uuid">输入上面的instance UUID</label>
+        <input type="str" name="uuid">
+        <label for="size">输入需要扩容的容量只需要数字如:添加60G输入60</label>
+        <input type="int" name="size" size=3>
+        <input type="submit" value="增加容量">
+    </form>
+{{ clonevmaction }}
+<!--从数据库中获取数据-->
+<ol>{% for vm in vm_ips.vmdetails_set.all %}
+    <!-- <li>{{ vm.vm_name }}</li> -->
+    <li><a href="{% url 'clonevm:vmdetail' vm.datacenter_id  %}">{{ vm.vm_name }}</a>
+    </li>{% endfor %}</ol>%
+{% endblock %}
+
+
+{% block script %}
+{% endblock %}

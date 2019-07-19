@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}克隆主机{% endblock %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block breadcrumb %}
+<!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+         克隆主机
+        <small>clone vm</small>
+      <a href="{% url 'clonevm:index' %}">{{ vm_ips.vsphere_comment }} </a>
+      </h1>
+      <ol class="breadcrumb">
+	<li><a href="{% url 'clonevm:index' %}"><i class="fa fa-dashboard"></i> 主页</a></li>
+        <li class="active">克隆主机</li>
+      </ol>
+
+    </section>
+{% endblock %}
+
+{% block content %}
+
+<title>提交用户信息</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<style>
+body, div, td, input {font-size:12px; margin:0px; }
+select {height:20px; width:300px; }
+.title {font-size: 16px; padding: 10px; width:80%; }
+.text {height:20px; width:300px; border:1px solid #AAAAAA; }
+.line {margin:2px; }
+.leftDiv {width:110px; float:left; height:22px; line-height:22px; font-weight:bold; }
+.rightDiv {height:42px; }
+.button {
+color:#fff;
+font-weight:bold;
+font-size: 11px; 
+text-align:center;
+padding:.17em 0 .2em .17em;
+border-style:solid;
+border-width:1px;
+border-color:#9cf #159 #159 #9cf;
+}
+</style>
+</head>
+<body>
+   <form action="{% url 'clonevm:newvm' vm_ips.vsphere_comment %}" method="POST">
+     {% csrf_token %}
+<div align="center">
+<br/>
+<fieldset style='width:90%'>
+<legend>填写主机信息</legend>
+<br/>
+<div class='line'>
+<div align="left" class='leftDiv'>请填写主机名：</div>
+<div align="left" class='rightDiv'>
+<input type="text" name="vmname" class="text" />
+<br/>格式:主机名,不要加vm-
+</div>
+</div>
+<div class='line'>
+<div align="left" class='leftDiv'>请填写IP：</div>
+<div align="left" class='rightDiv'>
+  <input type="text" name="vmip" class="text" required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" />
+</div>
+</div>
+<div class='line'>
+<div align="left" class='leftDiv'>请再次输入IP：</div>
+<div align="left" class='rightDiv'>
+<input type="text" name="vmipConfirm" class="text" required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" />
+</div>
+</div>
+
+<div class='line'>
+<div align="left" class='leftDiv'>请输入CPU核数：</div>
+<div align="left" class='rightDiv'>
+<input type="text" name="Cpu" class="text" required pattern="^([0-9])" /> 
+</div>
+</div>
+
+<div class='line'>
+<div align="left" class='leftDiv'>请输入内存总量：</div>
+<div align="left" class='rightDiv'>
+  <input type="text" name="Memory" class="text" οninput="if(value>16)value=16;if(value<1)value=1" /> 
+</div>
+</div>
+
+<div class='line'>
+<div align="left" class='leftDiv'>请输入VLAN</div>
+<div align="left" class='rightDiv'>
+<input type="text" name="Vlan" class="text">
+<br/>例子vlan2000
+</div>
+</div>
+
+<div class='line'>
+<div align="left" class='leftDiv'>请输入位于的集群</div>
+<div align="left" class='rightDiv'>
+<input type="text" name="cluster" class="text">
+<br/>9f必须填写(banksteel/mysteel),其他机房存储在本地的也要填写
+</div>
+</div>
+
+<div class='line'>
+<div align="left" class='leftDiv'>请选择模板：</div>
+<div align="left" class='rightDiv'>
+<select name="Template">
+		<option value="centos7Template" selected="selected">centos7</option>
+		<option value="centos6Template">centos6</option>
+		<option value="mysqlTemplate">mysql</option>
+		<option value="nginxTemplate">nginx</option>
+		<option value="oracleTemplate">oracle</option>
+</select>
+	</div>
+</div>
+<!--
+<div class='line'>
+<div align="left" class='leftDiv'>请选择VLAN：</div>
+	<div align="left" class='rightDiv'>
+	<select name="area">
+	<option>---请选择VLAN---</option>
+		<optgroup label="北京市">
+		<option value="北京市西城区">西城区</option>
+		</optgroup>
+	</select>
+	</div>
+</div>
+-->
+<div class='line'>
+<div align="left" class='leftDiv'>是否添加额外硬盘：</div>
+<div align="left" class='rightDiv'>
+<input type="radio" name="Disk" value="Yes" id="diskyes" onclick="switchItem('Yes')" >
+<label for="diskyes">是</label>
+<input type="radio" name="Disk" value="No" id="diskno" onclick="switchItem('No')" checked="checked">
+<label for="diskno">否</label>
+默认应用服务器50+30/数据服务器30+80+80
+
+<div id="extra_size" style="display: none">
+<input type="text" name="extra_size" class="text" >
+</div>
+</div>
+</div>
+
+<div class='line'>
+<div align="left" class='leftDiv'>机器存储位置</div>
+<div align="left" class='rightDiv'>
+<input type="radio" name="StorePosition" value="Yes" id="datastore" onclick="switchItem2('Yes')" checked="checked">
+<label for="datastore">数据存储</label>
+<input type="radio" name="StorePosition" value="No" id="localhost" onclick="switchItem2('No')">
+<label for="localhost">本地</label>
+本地请输入宿主机IP
+
+<div id="store_position" style="display: none">
+<input type="text" name="store_position_host" class="text" >
+</div>
+</div>
+</div>
+
+<div id="submit" class='line'>
+	<div align="left" class='leftDiv'></div>
+	<div align="left" class='rightDiv'>
+	<br/><input type="submit" name="btn" value="确认" 
+	class="button" style="height:30px;width:300px;" ><br/>
+	</div>
+</div>
+</fieldset>
+</div>
+</form>
+{{ clonection }}
+{{ adddiskaction }}
+
+{% endblock %}
+
+
+{% block script %}
+<script type="text/javascript">
+   function switchItem(click_status){
+   var extra_size_status = document.getElementById('extra_size');
+    if(click_status =='Yes'){
+        extra_size_status.style.display = '';
+    }
+    else{
+        extra_size_status.style.display = 'none';
+    }
+}
+   function switchItem2(click_status){
+   var store_position    = document.getElementById('store_position');
+    if(click_status =='No'){
+        store_position.style.display = '';
+    }
+    else{
+        store_position.style.display = 'none';
+    }
+  }
+
+var param={}
+$("form").serializeArray().map(function (x){param[x.name] = x.value} );
+
+console.log(param);
+
+$.each(param, function(key, value){
+    $("#results").append(key + ":" + value+ " " + "</br>");
+
+});
+
+</script>
+{% endblock %}

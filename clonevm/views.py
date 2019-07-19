@@ -1,0 +1,195 @@
+from django.shortcuts import render , get_object_or_404,get_list_or_404
+
+from django.http import HttpResponse , HttpResponseRedirect
+
+from .models import Vsphere,Disk,VmDetails
+
+from vsphere_exec.add_disk_to_vm import add_disk
+
+from vsphere_exec.get_args import service_con, Get_Vm
+from vsphere_exec.virtual_machine_device_info import Device_Info
+from vsphere_exec.clone_vm import  clone_vm
+
+
+
+from time import ctime
+
+import simplejson as json
+import request
+import threading
+# Create your views here.
+
+def index(request):
+#    asserts = models.clonevm.objects.all()
+    return render(request, 'clonevm/index.html', locals())
+
+def idc(request):
+    #return HttpResponse("You're in %s %d" % vsphere_comment, vsphere_host)
+    datacenter_list = Vsphere.objects.order_by('-vsphere_host')[::]
+    context = {
+        'datacenter_list':datacenter_list,
+    }
+    #return HttpResponse("Please pick the datacenter: %s " % output)
+    # 初始化页面
+    return render(request,'clonevm/idc.html', context)
+
+
+def machines(request,vsphere_comment):
+    """
+    IP或者VM_name 调用查询模块
+    instant UUID 和 capacity 调用加硬盘模块
+    :param request post:
+    :param vsphere_comment:
+    :return:
+    """
+    vm_ips = get_object_or_404(Vsphere,pk=vsphere_comment)
+     #初始化变量
+    host = vm_ips.vsphere_host
+    user = vm_ips.vsphere_username
+    pwd  = vm_ips.vsphere_password
+    result = result1 = result2 = {}
+
+    #调用外部vsphere函数 
+    try:
+        si = service_con(host,user,pwd)
+        if request.POST:
+            vm_ip=request.POST['ipaddress']
+            vm_name =request.POST['vmname']
+            UUID=request.POST['uuid']
+            disk_size=request.POST['size']
+            if vm_ip or vm_name:
+                """
+                字典格式
+                """
+                vm = Get_Vm(si,vm_name=vm_name,vm_ip=vm_ip)
+                if type(vm) == str:
+                    raise TypeError
+                result  = Device_Info(vm)
+                result1 = result[0]
+                result2 = result[1]
+
+                context = {
+                    'vm_ips':vm_ips,
+                    'result1':result1,
+                    'result2':result2,
+                }
+            elif UUID and disk_size:
+                vm= Get_Vm(si,vm_uuid=UUID)
+                add_disk_action = add_disk(vm,si,disk_size)
+                if type(vm) == str:
+                    raise TypeError
+                context= {
+                    'vm_ips':vm_ips,
+                    'adddiskaction':add_disk_action,
+                }
+        else:
+            # 防止刷新 无返回值
+            context = {'vm_ips':vm_ips}
+        return render(request,'clonevm/machines.html',context)
+    except OSError :
+        return HttpResponse("<p>无法连接远程vsphere服务器</p>")
+    except TypeError :
+        return HttpResponse("<p>无此虚拟机或虚拟机不受Vmtools控制，请尝试用VM名字来搜索</p>")
+        """
+        要实现自动跳转回主页面
+        """
+
+#def machines(request,vsphere_comment):
+#    #get_object_or_404(klass,*args,**kwarg) Klass可以使一个Model class，一个manager
+#    #暂时不明或者一个QuerySet 迭代器 **kwarg get()或者filter()支持的类型都可以
+#    vm_ips = get_object_or_404(Vsphere,pk=vsphere_comment)
+#    
+#    except :
+#        return render(request,'adddisk/machines.html',{
+#            'vm_ips':vm_ips,
+#            "error_message":"Not found the machine.",
+#        })
+#        if vm_ip:
+#            return HttpResponseRedirect(reversed('adddisk:vmdetail',args=(vsphere_comment,)),context)
+#        elif vm_name:
+#            return HttpResponseRedirect(reversed('adddisk:vmdetail',args=(vsphere_comment,)),context)
+
+
+def newvm(request,vsphere_comment):
+    vm_ips = get_object_or_404(Vsphere,pk=vsphere_comment)
+    host = vm_ips.vsphere_host
+    user = vm_ips.vsphere_username
+    pwd  = vm_ips.vsphere_password
+    try:
+        if request.method == "POST":
+            # json 格式
+
+            req = request.POST
+            vm_name = req['vmname']
+            vm_ip   = req['vmip']
+            vm_ip_Confirm   = req['vmipConfirm']
+            cpu     = req['Cpu']
+            memory  = req['Memory']
+            Vlan    = req['Vlan']
+            Template= req['Template']
+            cluster_name = req['cluster']
+            datastore_name = req['store_position_host']
+            disk_size= req['extra_size']
+            #因datacenter之后一个所以不收集
+            #resource_pool因没有利用起来所以也不采集
+
+            if vm_ip != vm_ip_Confirm:
+                print(vm_ip, "dddd",vm_ip_Confirm)
+                raise ValueError
+            datastorecluster_name = "vmsys"
+            if Template == "mysqlTemplate":
+                datastorecluster_name = "vmdb"
+
+            if  vsphere_comment == "9f":
+                if  cluster_name == "banksteel":
+                    cluster_name = "钢银"
+                    datastorecluster_name = "DNAS-Pro-Banksteel"
+                elif cluster_name == "mysteel":
+                    cluster_name = "钢联"
+                    datastorecluster_name = "DNAS-Pro-Mysteel"
+            elif vsphere_comment == "pbs":
+                cluster_name = "鹏博士"
+            elif vsphere_comment == "hcbanksteel":
+                cluster_name = "南翔"
+            elif vsphere_comment == "hcmysteel":
+                cluster_name = "钢联"
+
+            if datastore_name:
+                datastorecluster_name = req['store_position_host']
+
+            si = service_con(host,user,pwd)
+            print(type(si))
+            content = si.RetrieveContent()
+            clone_action = clone_vm(content,vm_name,si,
+                                    cluster_name,datastorecluster_name,template=Template)
+            #vm = Get_Vm(si,vm_name,vm_ip)
+            #add_disk_action = add_disk(vm,si,disk_size)
+            context= {
+                    'vm_ips':vm_ips,
+                    'cloneaction':clone_action,
+                #        'adddiskaction':add_disk_action,
+            }
+        else:
+            context = {'vm_ips':vm_ips}
+        return render(request,'clonevm/newvm.html',context)
+    except OSError:
+        #import sys
+        #return HttpResponse("Unexpected error:", sys.exc_info()[0])
+        return HttpResponse("<p>ip不同,请重试并修改</p>")
+
+def details(request,vsphere_comment,vm_name=None,vm_ip=None):
+    vm_info = get_object_or_404(VmDetails, vm_name=vm_name)
+    vm_ips = get_object_or_404(Vsphere,pk=vsphere_comment)
+    host = vm_ips.vsphere_host
+    user = vm_ips.vsphere_username
+    pwd  = vm_ips.vsphere_password
+    result = {}
+    if request.POST:
+        si = service_con(host,user,pwd)
+        disk_size=request.POST['size']
+        result = add_disk(vm_name,si,disk_size)
+    context = {
+        'vm_info':vm_info,
+        'result':result,
+    }
+    return render(request,'clonevm/detail.html',context)

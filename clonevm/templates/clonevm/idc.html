@@ -1,0 +1,53 @@
+
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}IDC选择{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'adminlet-2.4.10/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+
+{% endblock %}
+
+{% block breadcrumb %}
+<!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        IDC列表
+        <small>IDC info</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> 主页</a></li>
+        <li>机房列表</li>
+        <li class="active">IDC</li>
+      </ol>
+
+    </section>
+{% endblock %}
+
+{% block content %}
+
+ <!-- Main content -->
+    <section class="content container-fluid">
+
+        {% if datacenter_list %}
+        <ul>
+        {% for datacenter in datacenter_list %}
+        <li>{{ datacenter.vsphere_comment }}--{{ datacenter.vsphere_host }}
+            <a href="{% url 'clonevm:vmlist' datacenter.vsphere_comment %}"> 扩容</a>
+            <a href="{% url 'clonevm:newvm' datacenter.vsphere_comment %}"> 创建新主机</a>
+        </li>
+        {% endfor %}
+        </ul>
+        {% else %}
+        <p>No datacenters are available.</p>
+	{% endif %}
+
+    </section>
+
+
+{% endblock %}
+
+{% block script %}
+
+
+{% endblock %}
