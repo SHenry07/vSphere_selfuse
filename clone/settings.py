@@ -9,6 +9,7 @@ https://docs.djangoproject.com/en/2.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
+from __future__ import absolute_import, unicode_literals
 
 import os
 
@@ -130,6 +131,15 @@ STATICFILES_DIRS = [
 ]
 
 # celery异步配置
-CELERY_BROKER_URL = 'redis://mysteel123@192.168.100.135:6379/8'
-CELERY_RESULT_BACKEND = 'redis://mysteel123@192.168.100.135:6379/8'
+CELERY_BROKER_URL = 'redis://:mysteel123@192.168.100.135:6379/0'
+CELERY_RESULT_BACKEND = 'redis://:mysteel123@192.168.100.135:6379/0'
+# CELERY_TASK_SERIALIZER = 'json'
+
+#celery内容等消息的格式设置
+CELERY_ACCEPT_CONTENT = ['application/json','json']
 CELERY_TASK_SERIALIZER = 'json'
+# CELERY_RESULT_SERIALIZER = 'json'
+ 
+
+CELERY_TIMEZONE = TIME_ZONE
+

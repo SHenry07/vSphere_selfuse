@@ -1,3 +1,5 @@
+from __future__ import absolute_import, unicode_literals
+
 from django.shortcuts import render , get_object_or_404,get_list_or_404
 
 from django.http import HttpResponse , HttpResponseRedirect
@@ -8,8 +10,10 @@ from vsphere_exec.add_disk_to_vm import add_disk
 
 from vsphere_exec.get_args import service_con, Get_Vm
 from vsphere_exec.virtual_machine_device_info import Device_Info
-from vsphere_exec.clone_vm import  clone_vm
-from vsphere_exec.ping import  Ping_test
+# from vsphere_exec.clone_vm import  clone_vm
+# from vsphere_exec.ping import  Ping_test
+from .task import  Ping_Test_Check
+# , CloneDelay
 
 
 
@@ -140,7 +144,7 @@ def newvm(request,vsphere_comment):
                 raise ValueError
 
             #检查IP可用性
-            if Ping_test(vm_ip) == False: 
+            if Ping_Test_Check.delay(vm_ip) == False: 
                 raise OSError
 
             datastore_name = "vmsys"
@@ -169,12 +173,12 @@ def newvm(request,vsphere_comment):
             si = service_con(host,user,pwd)
             content = si.RetrieveContent()
             try:
-                clone_action = clone_vm(content,vm_name,si,cluster_name,datastore_name,
-                                        Template,vm_ip,cpu,memory,Vlan,disk_size
-                                        )
+                # clone_action = CloneDelay.delay(content,vm_name,si,cluster_name,datastore_name,
+                                        # Template,vm_ip,cpu,memory,Vlan,disk_size
+                                        # )
                 context = {
                     'vm_ips':vm_ips,
-                    'cloneaction':clone_action,
+                    # 'cloneaction':clone_action,
                 }
             except:
                 raise 
@@ -185,8 +189,8 @@ def newvm(request,vsphere_comment):
         #import sys
         #return HttpResponse("Unexpected error:", sys.exc_info()[0])
         return HttpResponse("<p>ip不同,请重试并修改</p></br>或者IP已被占用")
-    except:
-        return HttpResponse("Clone出错请登录vsphere查看报警")
+    # except:
+    #     return HttpResponse("Clone出错请登录vsphere查看报警")
 
 def details(request,vsphere_comment,vm_name=None,vm_ip=None):
     vm_info = get_object_or_404(VmDetails, vm_name=vm_name)
