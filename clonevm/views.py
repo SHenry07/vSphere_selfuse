@@ -171,13 +171,13 @@ def newvm(request,vsphere_comment):
             si = service_con(host,user,pwd)
             content = si.RetrieveContent()
             try:
-                clone_action = CloneDelay.delay(content,vm_name,si,cluster_name,datastore_name,
+                clone_action = CloneDelay(content,vm_name,si,cluster_name,datastore_name,
                                         Template,vm_ip,cpu,memory,Vlan,disk_size
                                         )
-                clone_action = json.load(clone_action)
+                # clone_action = json.load(clone_action)
                 context = {
                     'vm_ips':vm_ips,
-                    # 'cloneaction':clone_action,
+                    'cloneaction':clone_action,
                 }
             except:
                 raise 

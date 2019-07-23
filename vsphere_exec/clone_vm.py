@@ -11,7 +11,7 @@ import atexit
 
 #from add_nic_to_vm import add_nic
 from .add_disk_to_vm import add_disk
-from .getvnicinfo import GetVMNics
+# from .getvnicinfo import GetVMNics
 import logging ; logging.basicConfig(level=logging.INFO)
 #import get_args
 
@@ -51,7 +51,7 @@ def get_obj(content, vimtype, name):
 
 
 def clone_vm(
-        content,vm_name, si,cluster_name,datastore_name, template,vm_ip,
+        content,vm_name,si, cluster_name,datastore_name, template,vm_ip,
         cpu,memory,Vlan,disk_size,
         vm_folder="暂存待分配"):
     """
@@ -94,13 +94,7 @@ def clone_vm(
     relospec.datastore = datastore
     relospec.pool = resource_pool
 
-    # 配置vm硬件设备
-    vm_config = vim.vm.ConfigSpec()
-    vm_config.numCPUs = int(cpu)  
-    vm_config.memoryMB = int(memory)*1024  
-    vm_config.cpuHotAddEnabled = True  
-    vm_config.memoryHotAddEnabled = True
-
+  
 
     # 添加额外的硬盘没有必要自己实现因为和add_disk一样VirtualMachine.Config.AddNewDisk
 
@@ -156,7 +150,16 @@ def clone_vm(
 
     # print ("初始化配置",vm_config)
     clonespec = vim.vm.CloneSpec()
-    clonespec.config = vm_config
+    # 配置vm硬件设备
+    if cpu or memory:
+        vm_config = vim.vm.ConfigSpec()
+        if cpu:
+            vm_config.numCPUs = int(cpu)  
+            vm_config.memoryHotAddEnabled = True
+        if memory:
+            vm_config.memoryMB = int(memory)*1024  
+            vm_config.memoryHotAddEnabled = True
+        clonespec.config = vm_config
     clonespec.customization = GuestConfig
     clonespec.location = relospec
     clonespec.powerOn = False
