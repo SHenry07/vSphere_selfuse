@@ -1,9 +1,0 @@
-{% if datacenter_list %}
-    <ul>
-    {% for datacenter in datacenter_list %}
-    <li><a href="/cmdb/{{ datacenter.vsphere_comment }}/">{{ datacenter.vsphere_comment }}--{{ datacenter.vsphere_host }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No datacenters are available.</p>
-	{% endif %}

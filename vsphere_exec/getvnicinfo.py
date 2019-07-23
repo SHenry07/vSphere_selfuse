@@ -63,6 +63,9 @@ def PrintVmInfo(vm):
 def GetVMNics(vm):
     for dev in vm.config.hardware.device:
         if isinstance(dev, vim.vm.device.VirtualEthernetCard):
+            print(dev,type(dev))
+
+            print(dev.backing)
             dev_backing = dev.backing
             portGroup = None
             vlanId = None
@@ -102,6 +105,7 @@ def GetVMNics(vm):
             print('\t' + dev.deviceInfo.label + '->' + dev.macAddress +
                   ' @ ' + vSwitch + '->' + portGroup +
                   ' (VLAN ' + vlanId + ')')
+            return dev
 
 
 def GetArgs():

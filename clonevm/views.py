@@ -9,14 +9,14 @@ from vsphere_exec.add_disk_to_vm import add_disk
 from vsphere_exec.get_args import service_con, Get_Vm
 from vsphere_exec.virtual_machine_device_info import Device_Info
 from vsphere_exec.clone_vm import  clone_vm
+from vsphere_exec.ping import  Ping_test
 
 
 
 from time import ctime
 
-import simplejson as json
 import request
-import threading
+import logging ; logging.basicConfig(level=logging.INFO)
 # Create your views here.
 
 def index(request):
@@ -111,6 +111,10 @@ def machines(request,vsphere_comment):
 
 
 def newvm(request,vsphere_comment):
+    """
+    @ param string, IDC-ID
+    @ return  vim.vim.info
+    """
     vm_ips = get_object_or_404(Vsphere,pk=vsphere_comment)
     host = vm_ips.vsphere_host
     user = vm_ips.vsphere_username
@@ -128,54 +132,61 @@ def newvm(request,vsphere_comment):
             Vlan    = req['Vlan']
             Template= req['Template']
             cluster_name = req['cluster']
-            datastore_name = req['store_position_host']
             disk_size= req['extra_size']
             #因datacenter之后一个所以不收集
             #resource_pool因没有利用起来所以也不采集
-
+            logging.info("集群：%s, IP: %s" %(cluster_name, vm_ip))
             if vm_ip != vm_ip_Confirm:
-                print(vm_ip, "dddd",vm_ip_Confirm)
                 raise ValueError
-            datastorecluster_name = "vmsys"
+
+            #检查IP可用性
+            if Ping_test(vm_ip) == False: 
+                raise OSError
+
+            datastore_name = "vmsys"
             if Template == "mysqlTemplate":
-                datastorecluster_name = "vmdb"
+                datastore_name = "vmdb"
 
-            if  vsphere_comment == "9f":
-                if  cluster_name == "banksteel":
-                    cluster_name = "钢银"
-                    datastorecluster_name = "DNAS-Pro-Banksteel"
-                elif cluster_name == "mysteel":
+            
+            if  cluster_name == "banksteel":
+                cluster_name = "钢银9f"
+                datastore_name = "DNAS-Pro-Banksteel"
+            elif cluster_name == "mysteel":
+                cluster_name = "钢联9f"
+                datastore_name = "DNAS-Pro-Mysteel"
+            elif not cluster_name:
+                if vsphere_comment == "pbs":
+                    cluster_name = "鹏博士"
+                elif vsphere_comment == "hcbanksteel":
+                    cluster_name = "南翔"
+                elif vsphere_comment == "hcmysteel":
                     cluster_name = "钢联"
-                    datastorecluster_name = "DNAS-Pro-Mysteel"
-            elif vsphere_comment == "pbs":
-                cluster_name = "鹏博士"
-            elif vsphere_comment == "hcbanksteel":
-                cluster_name = "南翔"
-            elif vsphere_comment == "hcmysteel":
-                cluster_name = "钢联"
-
-            if datastore_name:
-                datastorecluster_name = req['store_position_host']
+            
+            if req['store_position_host']:
+                datastore_name = req['store_position_host']
+            logging.info("最终集群位置:%s,存取器位置: %s" %(cluster_name, datastore_name))
 
             si = service_con(host,user,pwd)
-            print(type(si))
             content = si.RetrieveContent()
-            clone_action = clone_vm(content,vm_name,si,
-                                    cluster_name,datastorecluster_name,template=Template)
-            #vm = Get_Vm(si,vm_name,vm_ip)
-            #add_disk_action = add_disk(vm,si,disk_size)
-            context= {
+            try:
+                clone_action = clone_vm(content,vm_name,si,cluster_name,datastore_name,
+                                        Template,vm_ip,cpu,memory,Vlan,disk_size
+                                        )
+                context = {
                     'vm_ips':vm_ips,
                     'cloneaction':clone_action,
-                #        'adddiskaction':add_disk_action,
-            }
+                }
+            except:
+                raise 
         else:
             context = {'vm_ips':vm_ips}
         return render(request,'clonevm/newvm.html',context)
     except OSError:
         #import sys
         #return HttpResponse("Unexpected error:", sys.exc_info()[0])
-        return HttpResponse("<p>ip不同,请重试并修改</p>")
+        return HttpResponse("<p>ip不同,请重试并修改</p></br>或者IP已被占用")
+    except:
+        return HttpResponse("Clone出错请登录vsphere查看报警")
 
 def details(request,vsphere_comment,vm_name=None,vm_ip=None):
     vm_info = get_object_or_404(VmDetails, vm_name=vm_name)

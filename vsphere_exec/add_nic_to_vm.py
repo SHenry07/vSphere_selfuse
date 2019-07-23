@@ -37,7 +37,9 @@ def add_nic(si, vm, network_name):
     nic_changes = []
 
     nic_spec = vim.vm.device.VirtualDeviceSpec()
-    nic_spec.operation = vim.vm.device.VirtualDeviceSpec.Operation.add
+    nic_spec.fileoperation = "replace"
+
+    nic_spec.operation = vim.vm.device.VirtualDeviceSpec.Operation.edit
 
     nic_spec.device = vim.vm.device.VirtualE1000()
 
@@ -48,7 +50,7 @@ def add_nic(si, vm, network_name):
     network = get_obj(content, [vim.Network], network_name)
     if isinstance(network, vim.OpaqueNetwork):
         nic_spec.device.backing = \
-            vim.vm.device.VirtualEthernetCard.OpaqueNetworkBackingInfo()
+            vim.vm.device.VirtualEthernetCard.DistributedVirtualPortBackingInfo()
         nic_spec.device.backing.opaqueNetworkType = \
             network.summary.opaqueNetworkType
         nic_spec.device.backing.opaqueNetworkId = \
@@ -71,6 +73,8 @@ def add_nic(si, vm, network_name):
     spec.deviceChange = nic_changes
     e = vm.ReconfigVM_Task(spec=spec)
     print("NIC CARD ADDED")
+
+    
 
 
 def main():

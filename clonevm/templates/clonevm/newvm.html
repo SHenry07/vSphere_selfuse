@@ -27,27 +27,27 @@
 <title>提交用户信息</title>
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 <style>
-body, div, td, input {font-size:12px; margin:0px; }
-select {height:20px; width:300px; }
+/* body, div, td, input {font-size:12px; margin:0px; }  */
+select {height:20px; width:200px; }
 .title {font-size: 16px; padding: 10px; width:80%; }
-.text {height:20px; width:300px; border:1px solid #AAAAAA; }
+.text {height:20px; width:200px; border:1px solid #AAAAAA; }
 .line {margin:2px; }
-.leftDiv {width:110px; float:left; height:22px; line-height:22px; font-weight:bold; }
+.leftDiv {width:130px; float:left; height:22px; line-height:22px; font-weight:bold; }
 .rightDiv {height:42px; }
 .button {
 color:#fff;
 font-weight:bold;
-font-size: 11px; 
+font-size: 15px; 
 text-align:center;
 padding:.17em 0 .2em .17em;
 border-style:solid;
-border-width:1px;
+border-width:5px;
 border-color:#9cf #159 #159 #9cf;
 }
 </style>
 </head>
 <body>
-   <form action="{% url 'clonevm:newvm' vm_ips.vsphere_comment %}" method="POST">
+   <form id="clonevmform" action="{% url 'clonevm:newvm' vm_ips.vsphere_comment %}" method="POST">
      {% csrf_token %}
 <div align="center">
 <br/>
@@ -58,7 +58,6 @@ border-color:#9cf #159 #159 #9cf;
 <div align="left" class='leftDiv'>请填写主机名：</div>
 <div align="left" class='rightDiv'>
 <input type="text" name="vmname" class="text" />
-<br/>格式:主机名,不要加vm-
 </div>
 </div>
 <div class='line'>
@@ -89,7 +88,7 @@ border-color:#9cf #159 #159 #9cf;
 </div>
 
 <div class='line'>
-<div align="left" class='leftDiv'>请输入VLAN</div>
+<div align="left" class='leftDiv'>请输入VLAN:</div>
 <div align="left" class='rightDiv'>
 <input type="text" name="Vlan" class="text">
 <br/>例子vlan2000
@@ -97,10 +96,10 @@ border-color:#9cf #159 #159 #9cf;
 </div>
 
 <div class='line'>
-<div align="left" class='leftDiv'>请输入位于的集群</div>
+<div align="left" class='leftDiv'>请输入位于的集群:</div>
 <div align="left" class='rightDiv'>
 <input type="text" name="cluster" class="text">
-<br/>9f必须填写(banksteel/mysteel),其他机房存储在本地的也要填写
+<br/>9f必须填写(banksteel/mysteel)，存储在本地的必须填写主机地址
 </div>
 </div>
 
@@ -145,13 +144,13 @@ border-color:#9cf #159 #159 #9cf;
 </div>
 
 <div class='line'>
-<div align="left" class='leftDiv'>机器存储位置</div>
+<div align="left" class='leftDiv'>机器存储位置:</div>
 <div align="left" class='rightDiv'>
 <input type="radio" name="StorePosition" value="Yes" id="datastore" onclick="switchItem2('Yes')" checked="checked">
 <label for="datastore">数据存储</label>
 <input type="radio" name="StorePosition" value="No" id="localhost" onclick="switchItem2('No')">
 <label for="localhost">本地</label>
-本地请输入宿主机IP
+host请输入datastore名字
 
 <div id="store_position" style="display: none">
 <input type="text" name="store_position_host" class="text" >
@@ -163,14 +162,12 @@ border-color:#9cf #159 #159 #9cf;
 	<div align="left" class='leftDiv'></div>
 	<div align="left" class='rightDiv'>
 	<br/><input type="submit" name="btn" value="确认" 
-	class="button" style="height:30px;width:300px;" ><br/>
+	class="button" style="height:40px;width:300px;" /><br/>
 	</div>
 </div>
 </fieldset>
 </div>
 </form>
-{{ clonection }}
-{{ adddiskaction }}
 
 {% endblock %}
 
@@ -196,6 +193,11 @@ border-color:#9cf #159 #159 #9cf;
     }
   }
 
+</script>
+// function submit(callback){document.getElementById("clonevmform").submit();callback();}
+// function reset(){$('#myform').reset();}function tijiao(){submit(reset);}
+
+<script type="text/javascript">
 var param={}
 $("form").serializeArray().map(function (x){param[x.name] = x.value} );
 
@@ -207,4 +209,21 @@ $.each(param, function(key, value){
 });
 
 </script>
+<!-- <script type="text/javascript">
+function save() {
+document.getElementsByClassName('button').disabled=true;
+var content= document.getElementsByClassName('button').value;
+if (lefttrim(content)=="") {
+alert("内容不能为空");
+document.getElementsByClassName('button').disabled=false;
+return false;
+}
+var data = {};
+data.body = {
+messagesql : content,
+};
+var titlej = JSON.stringify(data);
+
+</script> -->
+
 {% endblock %}
