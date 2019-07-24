@@ -130,7 +130,7 @@ def newvm(request,vsphere_comment):
             vm_ip_Confirm   = req['vmipConfirm']
             cpu     = req['Cpu']
             memory  = req['Memory']
-            Vlan    = req['Vlan']
+            # Vlan    = req['Vlan']
             Template= req['Template']
             cluster_name = req['cluster']
             disk_size= req['extra_size']
@@ -140,12 +140,16 @@ def newvm(request,vsphere_comment):
             if vm_ip != vm_ip_Confirm:
                 raise ValueError
 
-            #检查IP可用性
-            #if Ping_Test_Check.delay(vm_ip) == False:
-            #    raise OSError
+            Vlans = vm_ip.split('.')
+            if vsphere_comment == "9f":
+                Vlan =  ("vlan%d") % (Vlans[2])
+            else:
+                Vlan = ("vlan%d") %(int(Vlans[2]) * 10)
+            logging.info(Vlan)
+            print(Vlan,type(Vlan))
 
             datastore_name = "vmsys"
-            if Template == "mysqlTemplate":
+            if Template == "mysqlTemplate" or Template == "oracleTemplate":
                 datastore_name = "vmdb"
 
             if  cluster_name == "banksteel":
@@ -188,8 +192,8 @@ def newvm(request,vsphere_comment):
         #import sys
         #return HttpResponse("Unexpected error:", sys.exc_info()[0])
         return HttpResponse("<p>ip不同,请重试并修改</p></br>或者IP已被占用")
-    #except:
-    #    return HttpResponse("Clone出错请登录vsphere查看报警")
+    except:
+        return HttpResponse("Clone出错请登录vsphere查看报警")
 
 def details(request,vsphere_comment,vm_name=None,vm_ip=None):
     vm_info = get_object_or_404(VmDetails, vm_name=vm_name)

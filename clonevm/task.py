@@ -33,7 +33,7 @@ class CloneVm(threading.Thread):
 # @shared_task
 def CloneDelay(content,vm_name,si,cluster_name,datastore_name,Template,
 	       vm_ip,cpu,memory,Vlan,disk_size):
-	resqonse = os.system("ping  " + vm_ip)
+	resqonse = os.system("ping -c 3 " + vm_ip)
 	if resqonse == 0:
 		raise OSError
 

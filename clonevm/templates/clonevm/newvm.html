@@ -35,7 +35,7 @@ select {height:20px; width:200px; }
 .leftDiv {width:130px; float:left; height:22px; line-height:22px; font-weight:bold; }
 .rightDiv {height:42px; }
 .button {
-color:#fff;
+color:#333;
 font-weight:bold;
 font-size: 15px; 
 text-align:center;
@@ -54,46 +54,42 @@ border-color:#9cf #159 #159 #9cf;
 <fieldset style='width:90%'>
 <legend>填写主机信息</legend>
 <br/>
+<div align="left" class='leftDiv'>*是必填项</div>
+<br/>
 <div class='line'>
-<div align="left" class='leftDiv'>请填写主机名：</div>
+<div align="left" class='leftDiv'>*请填写主机名：</div>
 <div align="left" class='rightDiv'>
 <input type="text" name="vmname" class="text" />
 </div>
 </div>
 <div class='line'>
-<div align="left" class='leftDiv'>请填写IP：</div>
+<div align="left" class='leftDiv'>*请填写IP：</div>
 <div align="left" class='rightDiv'>
   <input type="text" name="vmip" class="text" required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" />
 </div>
 </div>
 <div class='line'>
-<div align="left" class='leftDiv'>请再次输入IP：</div>
+<div align="left" class='leftDiv'>*请再次输入IP：</div>
 <div align="left" class='rightDiv'>
 <input type="text" name="vmipConfirm" class="text" required pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$" />
 </div>
 </div>
 
 <div class='line'>
-<div align="left" class='leftDiv'>请输入CPU核数：</div>
+<div align="left" class='leftDiv'>*请输入CPU核数：</div>
 <div align="left" class='rightDiv'>
 <input type="text" name="Cpu" class="text" required pattern="^([0-9])" /> 
 </div>
 </div>
 
 <div class='line'>
-<div align="left" class='leftDiv'>请输入内存总量：</div>
+<div align="left" class='leftDiv'>*请输入内存总量：</div>
 <div align="left" class='rightDiv'>
   <input type="text" name="Memory" class="text" οninput="if(value>16)value=16;if(value<1)value=1" /> 
 </div>
 </div>
 
-<div class='line'>
-<div align="left" class='leftDiv'>请输入VLAN:</div>
-<div align="left" class='rightDiv'>
-<input type="text" name="Vlan" class="text">
-<br/>例子vlan2000
-</div>
-</div>
+
 
 <div class='line'>
 <div align="left" class='leftDiv'>请输入位于的集群:</div>
@@ -104,7 +100,7 @@ border-color:#9cf #159 #159 #9cf;
 </div>
 
 <div class='line'>
-<div align="left" class='leftDiv'>请选择模板：</div>
+<div align="left" class='leftDiv'>*请选择模板：</div>
 <div align="left" class='rightDiv'>
 <select name="Template">
 		<option value="centos7Template" selected="selected">centos7</option>
