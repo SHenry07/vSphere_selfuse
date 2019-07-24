@@ -164,7 +164,7 @@ def clone_vm(
     clonespec.location = relospec
     clonespec.powerOn = False
 
-    logging.info("克隆最终配置: {}" .format(clonespec))
+    # logging.info("克隆最终配置: {}" .format(clonespec))
     # print("cloning VM...")
 
     vm_name = vm_name[3:]
@@ -174,6 +174,7 @@ def clone_vm(
     # print(template.CheckCustomizationSpec(GuestConfig))
 
     task = template.Clone(folder=destfolder, name=vm_name, spec=clonespec)
+    print(task)
     wait_for_task(task)
 
     # 修改vlan

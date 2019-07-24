@@ -93,9 +93,7 @@ def machines(request,vsphere_comment):
         return HttpResponse("<p>无法连接远程vsphere服务器</p>")
     except TypeError :
         return HttpResponse("<p>无此虚拟机或虚拟机不受Vmtools控制，请尝试用VM名字来搜索</p>")
-        """
-        要实现自动跳转回主页面
-        """
+       # 要实现自动跳转回主页面
 
 #def machines(request,vsphere_comment):
 #    #get_object_or_404(klass,*args,**kwarg) Klass可以使一个Model class，一个manager
@@ -168,6 +166,7 @@ def newvm(request,vsphere_comment):
                 datastore_name = req['store_position_host']
             logging.info("最终集群位置:%s,存取器位置: %s" %(cluster_name, datastore_name))
 
+            logging.info("IDC:%s,user:%s" %(host,user))
             si = service_con(host,user,pwd)
             content = si.RetrieveContent()
             try:
@@ -183,6 +182,7 @@ def newvm(request,vsphere_comment):
                 raise 
         else:
             context = {'vm_ips':vm_ips}
+        print(context)
         return render(request,'clonevm/newvm.html',context)
     except OSError:
         #import sys
