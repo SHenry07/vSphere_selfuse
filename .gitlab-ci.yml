@@ -17,7 +17,7 @@ build:
     - deploy_236_shell
   cache:
     paths:
-      - ./.cache/
+      - ~/.cache/pip/
 
 deploy:
   stage: deploy
