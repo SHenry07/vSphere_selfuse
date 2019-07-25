@@ -138,13 +138,13 @@ def newvm(request,vsphere_comment):
             #resource_pool因没有利用起来所以也不采集
             logging.info("集群：%s, IP: %s" %(cluster_name, vm_ip))
             if vm_ip != vm_ip_Confirm:
-                raise ValueError
+                raise OSError
 
             Vlans = vm_ip.split('.')
             if vsphere_comment == "9f":
-                Vlan =  ("vlan%d") % (Vlans[2])
+                Vlan =  ("vlan%s") % (Vlans[2])
             else:
-                Vlan = ("vlan%d") %(int(Vlans[2]) * 10)
+                Vlan = ("vlan%s") %(int(Vlans[2]) * 10)
             logging.info(Vlan)
             print(Vlan,type(Vlan))
 
