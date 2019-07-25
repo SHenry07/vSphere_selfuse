@@ -1,3 +1,4 @@
+image: gitlab/dind:local
 before_script:
   - echo $LOCAL_CI_REGISTRY
   - 'docker login $LOCAL_CI_REGISTRY -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD'
@@ -13,15 +14,14 @@ build:
     - docker push $LOCAL_CI_REGISTRY/cmdb/cmdb:$CI_COMMIT_TAG
   only:
     - tags
+    - dev
   tags:
-    - deploy_236_shell
-  cache:
-    paths:
-      - ~/.cache/pip/
+    - python_build
 
 deploy:
   stage: deploy
   script:
+    - docker pull $LOCAL_CI_REGISTRY/cmdb/cmdb:$CI_COMMIT_TAG
     - 'docker ps -a | grep cmdbdeploy && docker stop cmdbdeploy && docker rm cmdbdeploy'
     - docker run -it -d --name cmdbdeploy -p 80:8000 $LOCAL_CI_REGISTRY/cmdb/cmdb:$CI_COMMIT_TAG
   environment:
