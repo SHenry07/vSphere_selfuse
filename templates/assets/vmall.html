@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}虚机总表{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static 'AdminLTE-2.4.10/bower_components/datatables.net-bs/css/dataTables.bootstrap.min.css' %}">
+
+{% endblock %}
+
+{% block breadcrumb %}
+<!-- Content Header (Page header) -->
+    <section class="content-header">
+      <h1>
+        虚机总表
+        <small>assets list</small>
+      </h1>
+      <ol class="breadcrumb">
+        <li><a href="#"><i class="fa fa-dashboard"></i> 主页</a></li>
+        <li class="active">虚机总表</li>
+      </ol>
+    </section>
+{% endblock %}
+
+{% block content %}
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+          <div class="col-xs-12">
+  
+          <div class="box">
+          <div class="box-header">
+            <h3 class="box-title">虚机总表</h3>
+          </div>
+          <!-- /.box-header -->
+          <div class="box-body">
+            <table id="assets_vm_table" class="table table-bordered table-striped">
+              <thead>
+              <tr>
+                <th>序号</th>
+                <th>资产名称</th>
+                <th>IP</th>
+                <th>密码</th>
+                <th>UUID</th>
+                <th>业务线</th>
+                <th>电源状态</th>
+                <th>网卡状态</th>
+                <th>Tools状态</th>
+                <th>机房</th>
+                <th>标签</th>
+              </tr>
+              </thead>
+              <tbody>
+
+                {% for vm in allvm %}
+
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+
+                        <!-- {% if asset.asset_type == 'server' %}
+                            <td><a href="{% url 'assets:detail' asset.id %}">{{ asset.name }}</a></td>
+                        {% else %}
+                            <td>{{ asset.name }}</td>
+                        {% endif %} -->
+
+                        <td>{{ vm.vm_name }}</td>
+                        <td>{{ vm.vm_ip }}</td>
+                        <td>{{ vm.vm_password }}</td>
+                        <td>{{ vm.vm_instance_UUID }}</td>
+                        <td>{{ vm.department }}</td>
+                        {% if vm.powerstate == "poweredOn" %}
+                          <td><label class="label label-success">{{ vm.powerstate }}</label></td>
+                        {% elif vm.powerstate == "poweredOff" %}
+                          <td><label class="label label-danger">{{ vm.powerstate }}</label></td>
+                        {% endif %}
+                        {% if vm.NICstate == "连接" %}
+                          <td><label class="label label-success">{{ vm.NICstate }}</label></td>
+                        {% elif vm.NICstate == "未启用" %}
+                          <td><label class="label label-warning">{{ vm.NICstate }}</label></td>
+                        {% elif vm.NICstate == "关闭" %}
+                          <td><label class="label label-danger">{{ vm.NICstate }}</label></td>
+                        {% endif %}
+                        {% if vm.vm_tools == "guestToolsRunning" %}
+                          <td><label class="label label-success">{{ vm.vm_tools }}</label></td>
+                        {% elif vm.vm_tools == "guestToolsNotRunning" %}
+                          <td><label class="label label-warning">{{ vm.vm_tools }}</label></td>
+                        {% endif %}
+
+
+                        <!-- <td><label class="label label-default">{{ vm.get_status_display }}</label></td> -->
+                        <!-- <td><label class="label label-info">{{ vm.get_status_display }}</label></td> -->
+
+                        
+
+                        <!-- <td>{{ vm.create_date|date:"Y/m/d" }}</td> -->
+
+                        <td>{{ vm.datacenter |default:"-" }}</td>
+                        <td>
+                          {% for tag in vm.tags.all %}
+                            <label class="label label-primary">{{ tag.name }}</label>
+                            {% empty %}
+                              -
+                            {% endfor %}
+                        </td> 
+                    </tr>
+
+                {% empty %}
+                <tr>没有数据</tr>
+                {% endfor %} 
+
+                </tbody>
+                <tfoot>
+                    <tr>
+                    <th>序号</th>
+                    <th>资产名称</th>
+                    <th>IP</th>
+                    <th>密码</th>
+                    <th>UUID</th>
+                    <th>业务线</th>
+                    <th>电源状态</th>
+                    <th>网卡状态</th>
+                    <th>Tools状态</th>
+                    <th>机房</th>
+                    <th>标签</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <!-- /.box-body -->
+      </div>
+      <!-- /.box -->
+        </div>
+    <!-- /.col -->
+      </div>
+    <!-- /.row -->
+    </section>
+
+{% endblock %}
+
+{% block script %}
+
+<script src="{% static 'AdminLTE-2.4.10/bower_components/datatables.net/js/jquery.dataTables.min.js' %}"></script>
+<script src="{% static 'AdminLTE-2.4.10/bower_components/datatables.net-bs/js/dataTables.bootstrap.min.js' %}"></script>
+
+<script>
+
+$(function () {
+        $('#assets_vm_table').DataTable({
+          "paging": true,       // 允许分页
+          "lengthChange": true, // 允许改变每页显示的行数
+          "searching": true,    // 允许内容搜索
+          "ordering": true,     // 允许排序
+          "info": true,         // 显示信息
+          "autoWidth": false    // 固定宽度
+        });
+      });
+
+</script>
+
+{% endblock %}

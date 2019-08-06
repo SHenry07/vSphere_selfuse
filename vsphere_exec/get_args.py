@@ -3,6 +3,7 @@ from pyVmomi import vim
 import atexit
 import argparse
 import getpass
+import logging ; logging.basicConfig(level=logging.INFO)
 
 
 
@@ -147,6 +148,9 @@ def get_obj(content, vimtype, name):
     return obj
 
 def Get_Vm(si,vm_name=None,vm_ip=None,vm_uuid=None):
+    """
+    支持按ip查询，名字查询，uuid查询
+    """
     search_index = si.content.searchIndex
 
     # without exception find managed objects using durable identifiers that the
@@ -156,11 +160,14 @@ def Get_Vm(si,vm_name=None,vm_ip=None,vm_uuid=None):
     vm = None
     if vm_uuid:
         vm = search_index.FindByUuid(None, vm_uuid, True, True)
+        logging.info("被检查的VM是:{}".format(vm_uuid))
     elif vm_ip:
         vm = search_index.FindByIp(None, vm_ip, True)
+        logging.info("被检查的VM是:{}".format(vm_ip))
     elif vm_name:
         content = si.RetrieveContent()
         vm = get_obj(content, [vim.VirtualMachine], vm_name)
+        logging.info("被检查的VM是:{}".format(vm_name))
 
     if not vm:
         return(u"Could not find a virtual machine to examine.")

@@ -6,19 +6,20 @@ Email: dannbohn@gmail.com
 
 Clone a VM from template example
 """
+import logging ; logging.basicConfig(level=logging.INFO)
+
 from pyVmomi import vim
 import atexit
 
 #from add_nic_to_vm import add_nic
 from .add_disk_to_vm import add_disk
 # from .getvnicinfo import GetVMNics
-import logging ; logging.basicConfig(level=logging.INFO)
 #import get_args
 
 class CloneError(Exception):
     pass
 
-def wait_for_task(task):
+def wait_for_task(task,vm_name):
     """ wait for a vCenter task to finish """
     task_done = False
     while not task_done:
@@ -27,7 +28,7 @@ def wait_for_task(task):
 
         if task.info.state == 'error':
             task_done = True
-            raise CloneError("there was an error")
+            raise CloneError("there was an error for {}".format(vm_name))
 
 
 def get_obj(content, vimtype, name):
@@ -142,13 +143,11 @@ def clone_vm(
     # scripts_item.spec = GuestConfig
     # scripts_item.info = GuestConfig_info
 
-    #print(scripts_item)
     #vm_customization_origin = content.customizationSpecManager.GetCustomizationSpec("linuxforscripts")
     #vm_customization = 
     # content.customizationSpecManager.OverwriteCustomizationSpec(scripts_item)
 
 
-    # print ("初始化配置",vm_config)
     clonespec = vim.vm.CloneSpec()
     # 配置vm硬件设备
     if cpu or memory:
@@ -165,7 +164,6 @@ def clone_vm(
     clonespec.powerOn = False
 
     # logging.info("克隆最终配置: {}" .format(clonespec))
-    # print("cloning VM...")
 
     vm_name = vm_name[3:]
     vm_name = "%s(%s)" %(vm_name,vm_ip) 
@@ -174,8 +172,8 @@ def clone_vm(
     # print(template.CheckCustomizationSpec(GuestConfig))
 
     task = template.Clone(folder=destfolder, name=vm_name, spec=clonespec)
-    print(task)
-    wait_for_task(task)
+    logging.info(task)
+    wait_for_task(task,vm_name)
 
     # 修改vlan
     nic_changes = []
@@ -210,7 +208,7 @@ def clone_vm(
     nic_changes.append(nic_spec)
     config_spec = vim.vm.ConfigSpec(deviceChange = nic_changes)
     task_change_vlan = vm.ReconfigVM_Task(config_spec)
-    wait_for_task(task_change_vlan)
+    wait_for_task(task_change_vlan,vm_name)
 
 
     if disk_size:
@@ -219,7 +217,7 @@ def clone_vm(
         task_add_disk
 
     task_poweron = vm.PowerOnVM_Task()
-    return wait_for_task(task_poweron)
+    return wait_for_task(task_poweron,vm_name)
 
 
 
@@ -239,7 +237,6 @@ def clone_vm(
 #     ports = dvs.FetchDVPorts(criteria)
 #     for port in ports:
 #         search_portkey.append(port.key)
-#     # print(search_portkey)
 #     return search_portkey[0]
 
 

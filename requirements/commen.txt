@@ -1,7 +1,6 @@
 argparse
-django==2.2.1
-#psycopg2
-mysqlclient
+django
+psycopg2
 celery[redis]
 simplejson
 request
@@ -11,7 +10,4 @@ suds>=0.4,<0.7 ; python_version < '3'
 suds-jurko ; python_version >= '3.0'
 vcrpy>=1.1.1
 django-taggit>=1.1.0
-django-fernet-fields==0.6
-Jinja2==2.10
-#mongoengine==0.18.2
-
+django-fernet-fields
