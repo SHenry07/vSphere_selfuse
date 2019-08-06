@@ -3,7 +3,7 @@ FROM 192.168.100.235/python/python:3.7.3-alpine3.9
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories; \
 apk update; \
-apk add --no-cache postgresql-client postgresql-dev gcc musl-dev
+apk add --no-cache  gcc musl-dev mysql-dev libffi-dev
 
 RUN mkdir -p /apply/cmdb
 ADD ./ /apply/cmdb/
