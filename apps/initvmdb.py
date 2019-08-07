@@ -14,7 +14,7 @@ from assets.intoVMdetails import InitIntoVmDetails
 from vsphere_exec.get_args import get_args, service_con
     
 def main():
-    vsphere_comment = "pbs"
+    vsphere_comment = "hcmysteel"
     args = get_args()
     
     host = args.host

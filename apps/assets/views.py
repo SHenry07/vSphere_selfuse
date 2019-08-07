@@ -4,8 +4,20 @@ from .models import VmDetails
 # Create your views here.
 
 def dashboard(request):
-    pass
-    return render(request,'assets/dashboard.html', locals())
+    total = VmDetails.objects.count()
+    upline = VmDetails.objects.filter(powerstate="poweredOn").count()
+    offline = VmDetails.objects.filter(powerstate="poweredOff").count()
+    nicup = VmDetails.objects.filter(NICstate="连接").count()
+    nicoff = VmDetails.objects.filter(NICstate="关闭").count()
+    nicnotuse = VmDetails.objects.filter(NICstate="未启用").count()
+
+    up_rate = round(upline / total*100)
+    off_rate = round(offline / total * 100)
+    nicup_rate = round(nicup / total * 100)
+    nicoff_rate = round(nicoff / total * 100)
+    nicnu_rate = round(nicnotuse / total * 100)
+
+    return render(request, 'assets/dashboard.html', locals())
 
 def VMDeatilsAll(request):
     '''
@@ -15,7 +27,7 @@ def VMDeatilsAll(request):
     '''
     allvm = VmDetails.objects.all()
     
-    return render(request,'assets/vmall.html',locals())
+    return render(request, 'assets/vmall.html', locals())
     
 
 def VMDeatilsEachIDC(request,vsphere_comment):
@@ -26,7 +38,7 @@ def VMDeatilsEachIDC(request,vsphere_comment):
     """
     allvmEachIDC = VmDetails.objects.filter(datacenter=vsphere_comment)
     
-    return render(request,'assets/vmeachIDC.html',locals())
+    return render(request, 'assets/vmeachIDC.html', locals())
 
 
 def vmdetailsOne(request,UUID):
@@ -36,4 +48,5 @@ def vmdetailsOne(request,UUID):
     :param UUID:
     :return:
     """
-    pass
+    vm = get_object_or_404(VmDetails,vm_instance_UUID=UUID)
+    return render(request, 'assets/details.html', locals())

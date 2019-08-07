@@ -5,7 +5,7 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositorie
 apk update; \
 apk add --no-cache  gcc musl-dev mysql-dev libffi-dev
 
-RUN mkdir -p /apply/cmdb
+RUN mkdir -p /apply/cmdb/logs
 ADD ./ /apply/cmdb/
 RUN pip --no-cache-dir install -r /apply/cmdb/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 

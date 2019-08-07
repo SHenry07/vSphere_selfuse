@@ -25,7 +25,8 @@ class VmDetails(models.Model):
     vm_tools = models.CharField(verbose_name="VMTOOLS是否运行",max_length=30)
     powerstate = models.CharField(verbose_name="电源状态",max_length=15)
     NICstate = models.CharField(verbose_name="网卡状态",max_length=10,default="连接")
-    vm_instance_UUID = models.CharField(verbose_name="UUID",max_length=200)
+    vm_instance_UUID = models.CharField(verbose_name="UUID",max_length=100)
+    type = models.CharField(verbose_name="类型",max_length=20,default="虚拟机")
     create_date = models.DateField(verbose_name="创建日期",auto_now_add=True)
     tags = TaggableManager()
 
