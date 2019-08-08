@@ -50,3 +50,13 @@ def vmdetailsOne(request,UUID):
     """
     vm = get_object_or_404(VmDetails,vm_instance_UUID=UUID)
     return render(request, 'assets/details.html', locals())
+
+
+def report(request):
+    '''
+    @description: 
+    @param {type} 
+    @return: 
+    '''
+
+    pass 

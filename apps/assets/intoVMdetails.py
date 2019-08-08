@@ -8,9 +8,11 @@ from django.core.exceptions import ObjectDoesNotExist
 # import sys
 # sys.path.append('../')
 
+from vsphere_exec.get_args import service_con, Get_Vm
 from vsphere_exec.virtual_machine_device_info import Device_Info
 from apps.Logout import Logger
 from .models import VmDetails
+from elementryinfo.models import Vsphere 
 
 
 log = Logger('logs/warning.log',level='warning')
@@ -40,12 +42,17 @@ def IntoVmDetails(vsphere_comment,vm_name,vm_ip,vm_passwd,disk_size,instance_UUI
         data.tags.add("saltstack","zabbix")
         data.save()
 
-def CronUpdateVMdetails(content,instance_UUID):
+def CronUpdateVMdetails():
     '''
     @description:更新虚机信息 
+    如果新数据有，但原数据没有，则新增；
+    如果新数据没有，但原数据有，则删除原来多余的部分；
+    如果新的和原数据都有，则更新。
+    使用集合数据类型中差的概念，处理不同的情况。
     @param {instance_UUID}
     @return: 无
     '''    
+    # for 
     vms = vsphere(content)
     for vm in vms:
         result = Device_Info(vm)

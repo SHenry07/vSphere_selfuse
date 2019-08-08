@@ -97,7 +97,7 @@ DATABASES = {
         # 'HOST': '192.168.100.227',
         # 'PORT': '5432',
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'djangolocal',
+        'NAME': 'django',
         'USER': 'mysteel',
         'PASSWORD':'mysteel123',  
         'HOST': '192.168.100.227',

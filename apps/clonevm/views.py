@@ -8,7 +8,7 @@ import request
 import simplejson as json
 import logging ; logging.basicConfig(level=logging.INFO)
 
-from .models import Vsphere
+from elementryinfo.models import Vsphere
 from .task import CloneDelay
 from vsphere_exec.add_disk_to_vm import add_disk
 from vsphere_exec.get_args import service_con, Get_Vm
@@ -123,11 +123,11 @@ def newvm(request,vsphere_comment):
             Template= req['Template']
             cluster_name = req['cluster']
             disk_size= req['extra_size']
-            #因datacenter之后一个所以不收集
+            #因datacenter只有一个所以不收集
             #resource_pool因没有利用起来所以也不采集
             logging.info("集群：%s, IP: %s" %(cluster_name, vm_ip))
             if vm_name == "":
-                raise 
+                raise ValueError
             if vm_ip != vm_ip_Confirm:
                 raise OSError
 
