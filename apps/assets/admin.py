@@ -15,4 +15,5 @@ class VmDetailsAdmin(admin.ModelAdmin):
     # 改变后台展示
     list_display = ('vm_name','vm_ip','vm_guest_username','vm_password','department','vm_instance_UUID',
     'tags','datacenter')
+    search_fields = ('vm_name','vm_ip')
 admin.site.register(VmDetails,VmDetailsAdmin)

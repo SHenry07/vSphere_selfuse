@@ -31,4 +31,4 @@ class VmDetails(models.Model):
     tags = TaggableManager()
 
     def __str__(self):
-        return self.vm_name
+        return "%s %s" % (self.vm_name, self.vm_ip)

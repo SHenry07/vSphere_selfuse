@@ -126,6 +126,8 @@ def newvm(request,vsphere_comment):
             #因datacenter之后一个所以不收集
             #resource_pool因没有利用起来所以也不采集
             logging.info("集群：%s, IP: %s" %(cluster_name, vm_ip))
+            if vm_name == "":
+                raise 
             if vm_ip != vm_ip_Confirm:
                 raise OSError
 
@@ -183,6 +185,6 @@ def newvm(request,vsphere_comment):
         #import sys
         #return HttpResponse("Unexpected error:", sys.exc_info()[0])
         return HttpResponse("<p>ip不同,请重试并修改</p></br>或者IP已被占用")
-    # except:
-    #     return HttpResponse("Clone出错请登录vsphere查看报警")
+    except:
+        return HttpResponse("Clone出错如名字ip填写无误请登录vsphere查看报警")
 

@@ -40,15 +40,44 @@ def IntoVmDetails(vsphere_comment,vm_name,vm_ip,vm_passwd,disk_size,instance_UUI
         data.tags.add("saltstack","zabbix")
         data.save()
 
-def UpdateVMdetails(vm_instance_UUID):
+def CronUpdateVMdetails(content,instance_UUID):
     '''
     @description:更新虚机信息 
     @param {instance_UUID}
     @return: 无
     '''    
-
-    # VmDetails.object
-    pass
+    vms = vsphere(content)
+    for vm in vms:
+        result = Device_Info(vm)
+        try:
+        #判断主机是否已写入数据库
+            onevm = VmDetails.objects.get(vm_instance_UUID = instance_UUID)
+            onevm.vm_name = vm_name
+            onevm.vm_ip = vm_ip
+            onevm.vm_password = vm_passwd
+            onevm.vm_datastore =  datastore
+            onevm.vm_cpu = int(cpu)
+            onevm.vm_memory = int(memory)
+            onevm.disk_size = disk_size
+            onevm.powerstate = powerstate
+            onevm.vm_tools = "guestToolsRunning"
+            onevm.vm_tools = result[0]["vmtools"]
+            onevm.powerstate = result[0]['powerstate']
+            onevm.vm_guest_os_name = result[0]['guest OS name']
+            onevm.vm_instance_UUID = result[0]['instance UUID']
+            onevm.NICstate = "关闭"
+            if data.powerstate == "poweredOn":
+                for nic in result[2].values():
+                    connnectstate = nic[0]
+                    if not connnectstate:
+                        data.NICstate = "未启用"
+                    else:
+                        data.NICstate = "连接"
+            logging.info("name: %s 电源状态 %s 网卡状态: %s" % (result[0]['name'],data.powerstate,
+                                                               data.NICstate))       
+            onevm.save()
+        except ObjectDoesNotExist:
+            Logger('logs/error.log', level='error').logger.error('主机不存在')
             
 
 def InitIntoVmDetails(vsphere_comment,content):
@@ -58,11 +87,7 @@ def InitIntoVmDetails(vsphere_comment,content):
     @param {type} string vim要求的管理类型详见APIcontent = si.RetrieveContent()
     @return: 无
     """
-    vm_view = content.viewManager.CreateContainerView(content.rootFolder,
-                                                      [vim.VirtualMachine],
-                                                      True)
-    vms = [vm for vm in vm_view.view]
-    vm_view.Destroy()
+    vms = vsphere(content)
     for vm in vms:
         try:
             result = Device_Info(vm)
@@ -127,3 +152,11 @@ def InitIntoVmDetails(vsphere_comment,content):
             log.logger.warning('命名不规范: {}'.format(e))
             # logging.warning('命名不规范: {}'.format(e))
 
+
+def vsphere(content):
+    vm_view = content.viewManager.CreateContainerView(content.rootFolder,
+                                                      [vim.VirtualMachine],
+                                                      True)
+    vms = [vm for vm in vm_view.view]
+    vm_view.Destroy()
+    return vms
