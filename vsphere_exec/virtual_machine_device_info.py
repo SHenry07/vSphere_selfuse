@@ -24,7 +24,6 @@ def Device_Info(vm):
             'ipaddress': vm.summary.guest.ipAddress,
             'hostname': vm.summary.guest.hostName,
             'last booted timestamp': vm.runtime.bootTime}
-    log.logger.info("被检查的虚机:{}".format(details))
 
     DiskInfo, NetadapterInfo = {}, {}
 
@@ -44,6 +43,7 @@ def Device_Info(vm):
             NetadapterInfo[label] = device.connectable.connected, device.connectable.status
                                                           
 
+    log.logger.info("被检查的虚机:{} {} {}".format(details,DiskInfo,NetadapterInfo))
         #print(u"  label: {0}".format(device.deviceInfo.label))
         #print(u"  ------------------")
     # for name, value in DiskAndNet_adapter.items():

@@ -4,10 +4,31 @@ from taggit.managers import TaggableManager
 from fernet_fields import EncryptedCharField
 
 
+class AssetType(models.Model):
+    """
+    资产类型
+    """
+    TYPECHOICE = (
+        ("vm", "虚拟机"),
+        ("pm", "物理机"),
+        ("switch", "交换机"),
+        ("store", "存储"),
+    )
+    assettype = models.CharField(verbose_name="资产类型",choices=TYPECHOICE, max_length=10)
+
+    class Meta:
+        verbose_name = "资产类型"
+        verbose_name_plural = verbose_name
+
 class VmDetails(models.Model):
     """
     虚拟机的信息
     """
+    NICSTATE_CHOICE = (
+        ('Unused',"未启用"),
+        ('On',"连接"),
+        ('Off',"关闭")
+    )
     datacenter = models.CharField(max_length=20,verbose_name="IDC机房")
     vm_name = models.CharField(max_length=100,verbose_name="虚拟机名字")
     vm_ip = models.GenericIPAddressField(verbose_name="虚拟机内网IP",
@@ -24,11 +45,16 @@ class VmDetails(models.Model):
     disk_size = models.IntegerField(verbose_name="总硬盘大小",default=80)
     vm_tools = models.CharField(verbose_name="VMTOOLS是否运行",max_length=30)
     powerstate = models.CharField(verbose_name="电源状态",max_length=15)
-    NICstate = models.CharField(verbose_name="网卡状态",max_length=10,default="连接")
+    NICstate = models.CharField(verbose_name="网卡状态",choices=NICSTATE_CHOICE, max_length=10,)
     vm_instance_UUID = models.CharField(verbose_name="UUID",max_length=100)
-    type = models.CharField(verbose_name="类型",max_length=20,default="虚拟机")
+    asset_type = models.ForeignKey(AssetType,verbose_name="类型",on_delete=models.CASCADE)
     create_date = models.DateField(verbose_name="创建日期",auto_now_add=True)
     tags = TaggableManager()
 
+    class Meta:
+        verbose_name = "虚拟机详细信息"
+        verbose_name_plural = verbose_name
+
     def __str__(self):
         return "%s %s" % (self.vm_name, self.vm_ip)
+

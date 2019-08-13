@@ -25,7 +25,7 @@ def SearchVmDetails(content):
 
             if result[0]['Template']:
                 continue
-            print(result)
+            # print(result)
 
             vm_tools = result[0]["vmtools"]
             powerstate = result[0]['powerstate']

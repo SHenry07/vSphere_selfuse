@@ -18,8 +18,9 @@ import sys
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 sys.path.insert(0, os.path.join(BASE_DIR, 'apps'))
-# sys.path.insert(0, os.path.join(BASE_DIR, 'extra_apps'))
+sys.path.insert(0, os.path.join(BASE_DIR, 'extra_apps'))
 sys.path.insert(0, os.path.join(BASE_DIR, 'libs'))
+sys.path.insert(0, os.path.join(BASE_DIR, 'configs'))
 
 # config = configparser.ConfigParser()
 # config.read(os.path.join(BASE_DIR, 'cmdb.conf'))
@@ -47,10 +48,15 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_python3_ldap',
     'clonevm.apps.CloneVmConfig',
     'elementryinfo.apps.ElementryinfoConfig',
     'assets.apps.AssetsConfig',
     'taggit',
+    'crispy_forms',
+    'xadmin',
+    'reversion',
+    'django.conf'
 ]
 
 
@@ -97,7 +103,7 @@ DATABASES = {
         # 'HOST': '192.168.100.227',
         # 'PORT': '5432',
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django',
+        'NAME': 'djangolocal',
         'USER': 'mysteel',
         'PASSWORD':'mysteel123',  
         'HOST': '192.168.100.227',
@@ -110,6 +116,11 @@ DATABASES = {
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators
+
+AUTHENTICATION_BACKENDS = [
+    'django_python3_ldap.auth.LDAPBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -131,7 +142,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/2.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
 TIME_ZONE = 'Asia/Shanghai'
 
@@ -163,3 +174,59 @@ STATICFILES_DIRS = [
 
 # CELERY_TIMEZONE = TIME_ZONE
 
+
+
+LDAP_AUTH_URL = "ldap://192.168.100.16:389"
+
+#在连接时启动TLS。
+LDAP_AUTH_USE_TLS  =  False
+
+#用于查找用户的LDAP搜索库。
+LDAP_AUTH_SEARCH_BASE  = "OU=产品研发中心,OU=banksteel,DC=banksteeltech,DC=local"
+
+#表示用户的LDAP类。
+LDAP_AUTH_OBJECT_CLASS = "user"
+
+#用户模型字段映射到表示它们的LDAP属性。
+LDAP_AUTH_USER_FIELDS = {
+    "username": "sAMAccountName",
+    "first_name": "givenName",
+    "last_name": "sn",
+    "email": "mail",
+}
+#用于唯一标识用户的django模型字段的元组。
+LDAP_AUTH_USER_LOOKUP_FIELDS = ("username",)
+
+
+#路径的可调用这需要{model_field_name：值}的字典，
+#返回干净的模型数据字典。
+#使用此选项可以自定义从LDAP加载的数据如何保存到用户模型。
+LDAP_AUTH_CLEAN_USER_DATA  =  "django_python3_ldap.utils.clean_user_data"
+
+#路径一个可调用，需要一个用户模型和一个字典{ldap_field_name：[数值]}， 
+#并保存基于所述LDAP数据的任何附加的用户的关系。
+#使用此选项可以自定义从LDAP加载的数据如何保存到用户模型关系。
+#要自定义不相关的用户模型字段，请使用LDAP_AUTH_CLEAN_USER_DATA。
+LDAP_AUTH_SYNC_USER_RELATIONS  =  "django_python3_ldap.utils.sync_user_relations"
+
+#k路径一个可调用该取{ldap_field_name：值}的一个字典，返回的[ldap_search_filter]列表。
+#在创建最终搜索过滤器时，搜索过滤器将与AND ＃在一起。
+LDAP_AUTH_FORMAT_SEARCH_FILTERS = "django_python3_ldap.utils.format_search_filters"
+
+#路径的可调用这需要{model_field_name：值}的一个字典，并返回用户名的字符串绑定到LDAP服务器。
+#用于支持不同类型的LDAP服务器。
+LDAP_AUTH_FORMAT_USERNAME = "django_python3_ldap.utils.format_username_active_directory_principal"
+# LDAP_AUTH_FORMAT_USERNAME = "django_python3_ldap.utils.format_username_active_directory"
+
+
+#设置Active Directory用户的登录域。
+LDAP_AUTH_ACTIVE_DIRECTORY_DOMAIN = "banksteeltech.local"
+
+#用户的LDAP用户名和密码，用于查询LDAP数据库中的用户
+#详细信息。如果没有，则该认证的用户将用于查询和的`ldap_sync_users`命令将执行匿名查询。
+# 上面写域名了 这里administrator后面就不要加域名了 详情可看testldap3.py
+LDAP_AUTH_CONNECTION_USERNAME  =  "administrator"
+LDAP_AUTH_CONNECTION_PASSWORD  =  "!QAZ3edc"
+
+#在底层`ldap3`库上设置连接/接收超时（以秒为单位）。
+LDAP_AUTH_CONNECT_TIMEOUT  = None

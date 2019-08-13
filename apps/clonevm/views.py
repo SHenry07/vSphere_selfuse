@@ -39,7 +39,6 @@ def machines(request,vsphere_comment):
     host = vm_ips.vsphere_host
     user = vm_ips.vsphere_username
     pwd  = vm_ips.vsphere_password
-    result = result1 = result2 = {}
 
     #调用外部vsphere函数 
     try:
@@ -57,13 +56,12 @@ def machines(request,vsphere_comment):
                 if type(vm) == str:
                     raise TypeError
                 result  = Device_Info(vm)
-                result1 = result[0]
-                result2 = result[1]
 
                 context = {
                     'vm_ips':vm_ips,
-                    'result1':result1,
-                    'result2':result2,
+                    'result1':result[0],
+                    'result2':result[1],
+                    'result3':result[2],
                 }
             elif UUID and disk_size:
                 vm= Get_Vm(si,vm_uuid=UUID)

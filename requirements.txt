@@ -1,5 +1,16 @@
 argparse
 django==2.2.1
+django-crispy-forms>=1.6.0
+django-import-export>=0.5.1
+django-reversion>=2.0.0
+django-formtools==1.0
+django-formtools==2.1
+django-fernet-fields==0.6
+unidecode==1.1.1
+django-python3-ldap
+future==0.15.2
+httplib2==0.9.2
+six
 #psycopg2
 mysqlclient
 celery[redis]
@@ -10,8 +21,6 @@ requests
 suds>=0.4,<0.7 ; python_version < '3'
 suds-jurko ; python_version >= '3.0'
 vcrpy>=1.1.1
-django-taggit>=1.1.0
-django-fernet-fields==0.6
 Jinja2==2.10
 #mongoengine==0.18.2
 

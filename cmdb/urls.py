@@ -18,10 +18,14 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib import admin
 from django.urls import include, path, re_path
 
+import xadmin
 
 urlpatterns = [
+    #后台
+    path('xadmin/', xadmin.site.urls),
+
     path('', include('elementryinfo.urls')),
     path('assets/', include('assets.urls')),
     path('idc/', include('clonevm.urls')),
-    path('admin/', admin.site.urls),
+    #path('admin/', admin.site.urls),
 ]

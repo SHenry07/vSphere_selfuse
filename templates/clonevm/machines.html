@@ -33,6 +33,8 @@
     <li>{{ name }}: {{ value }}</li>{% endfor %}
     {% for name,value in result2.items %}
     <li>{{ name }}: {{ value }}</li>{% endfor %}
+    {% for name,value in result3.items %}
+    <li>{{ name }}: {{ value }}</li>{% endfor %}
     <<!--<form name="扩容硬盘" method="post">{% csrf_token %}-->
         <label for="uuid">输入上面的instance UUID</label>
         <input type="str" name="uuid">
@@ -41,11 +43,6 @@
         <input type="submit" value="增加容量">
     </form>
     {{ adddiskaction }}
-<!--从数据库中获取数据-->
-<ol>{% for vm in vm_ips.vmdetails_set.all %}
-    <!-- <li>{{ vm.vm_name }}</li> -->
-    <li><a href="{% url 'clonevm:vmdetail' vm.datacenter_id  %}">{{ vm.vm_name }}</a>
-    </li>{% endfor %}</ol>%
 {% endblock %}
 
 
