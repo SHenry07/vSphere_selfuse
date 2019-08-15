@@ -1,3 +1,10 @@
+<!--
+ * @Description: 
+ * @Author: Henry Sun
+ * @Date: 2019-08-07 14:11:06
+ * @LastEditors: Henry Sun
+ * @LastEditTime: 2019-08-15 10:17:53
+ -->
 {% extends 'base.html' %}
 {% load static %}
 {% block title %}虚机总表{% endblock %}
@@ -39,13 +46,13 @@
                 <th>序号</th>
                 <th>资产名称</th>
                 <th>IP</th>
-                <th>密码</th>
                 <th>UUID</th>
                 <th>业务线</th>
                 <th>电源状态</th>
                 <th>网卡状态</th>
                 <th>Tools状态</th>
                 <th>标签</th>
+                <th>更新时间</th>
               </tr>
               </thead>
               <tbody>
@@ -63,24 +70,23 @@
 
                         <td>{{ vm.vm_name }}</td>
                         <td>{{ vm.vm_ip }}</td>
-                        <td>{{ vm.vm_password }}</td>
                         <td><a href="{% url 'assets:detail' vm.vm_instance_UUID %}">{{ vm.vm_instance_UUID }}</a></td>
                         <td>{{ vm.department }}</td>
-                        {% if vm.powerstate == "poweredOn" %}
+                        {% if vm.powerstate == "On" %}
                           <td><label class="label label-success">{{ vm.powerstate }}</label></td>
-                        {% elif vm.powerstate == "poweredOff" %}
+                        {% elif vm.powerstate == "Off" %}
                           <td><label class="label label-danger">{{ vm.powerstate }}</label></td>
                         {% endif %}
-                        {% if vm.NICstate == "连接" %}
+                        {% if vm.NICstate == "On" %}
                           <td><label class="label label-success">{{ vm.NICstate }}</label></td>
-                        {% elif vm.NICstate == "未启用" %}
+                        {% elif vm.NICstate == "Unused" %}
                           <td><label class="label label-warning">{{ vm.NICstate }}</label></td>
-                        {% elif vm.NICstate == "关闭" %}
+                        {% elif vm.NICstate == "Off" %}
                           <td><label class="label label-danger">{{ vm.NICstate }}</label></td>
                         {% endif %}
-                        {% if vm.vm_tools == "guestToolsRunning" %}
+                        {% if vm.vm_tools == "On" %}
                           <td><label class="label label-success">{{ vm.vm_tools }}</label></td>
-                        {% elif vm.vm_tools == "guestToolsNotRunning" %}
+                        {% elif vm.vm_tools == "Off" %}
                           <td><label class="label label-warning">{{ vm.vm_tools }}</label></td>
                         {% endif %}
 
@@ -96,6 +102,7 @@
                               -
                             {% endfor %}
                         </td> 
+                        <td>{{ vm.m_time |date:"Y/m/d" }}</td> 
                     </tr>
 
                 {% empty %}
@@ -108,13 +115,13 @@
                     <th>序号</th>
                     <th>资产名称</th>
                     <th>IP</th>
-                    <th>密码</th>
                     <th>UUID</th>
                     <th>业务线</th>
                     <th>电源状态</th>
                     <th>网卡状态</th>
                     <th>Tools状态</th>
                     <th>标签</th>
+                    <th>更新时间</th>
                     </tr>
                 </tfoot>
             </table>

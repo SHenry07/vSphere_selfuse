@@ -1,3 +1,10 @@
+<!--
+ * @Description: 
+ * @Author: Henry Sun
+ * @Date: 2019-08-13 19:47:04
+ * @LastEditors: Henry Sun
+ * @LastEditTime: 2019-08-14 21:19:03
+ -->
 1. xadmin出现如下错误ModuleNotFoundError: No module named 'django.core.urlresolvers'
 
 解: 将`core.urlresolvers`替换为`urls`
@@ -60,6 +67,19 @@ if isinstance(field.remote_field, models.ManyToOneRel):
 related_fields.append(field_name)
 ```
 >> PS：凡是报异常rel的地方都可以尝试将报错方法中的.rel 修改为.remote_field
+
+8. `AttributeError: 'NoneType' object has no attribute 'split'`
+
+解: window下错误后面用uwsi会解决
+
+------
+# 功能的修改
+
+1. xadmin 在修改用户的时候 **权限字段**不显示 **选择全部 删除全部**
+
+解: plugins/auth.py 68行 `style_fields = {'user_permissions': 'm2m_transfer'}`修改为
+
+`style_fields = {'user_permissions': 'm2m_transfer','groups': 'm2m_transfer'}`
 
 # Reference
 [django2.0下Xadmin错误参考](https://www.cnblogs.com/xingfuggz/p/10142388.html)

@@ -1,15 +1,24 @@
+'''
+@Description: 
+@Author: Henry Sun
+@Date: 2019-08-07 14:11:06
+@LastEditors: Henry Sun
+@LastEditTime: 2019-08-15 10:49:12
+'''
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
+
 from .models import VmDetails
+from .filters import VmDetailsFilter
 # Create your views here.
 
 def dashboard(request):
     total = VmDetails.objects.count()
-    upline = VmDetails.objects.filter(powerstate="poweredOn").count()
-    offline = VmDetails.objects.filter(powerstate="poweredOff").count()
-    nicup = VmDetails.objects.filter(NICstate="连接").count()
-    nicoff = VmDetails.objects.filter(NICstate="关闭").count()
-    nicnotuse = VmDetails.objects.filter(NICstate="未启用").count()
+    upline = VmDetails.objects.filter(powerstate="On").count()
+    offline = VmDetails.objects.filter(powerstate="Off").count()
+    nicup = VmDetails.objects.filter(NICstate="On").count()
+    nicoff = VmDetails.objects.filter(NICstate="Off").count()
+    nicnotuse = VmDetails.objects.filter(NICstate="Unused").count()
 
     up_rate = round(upline / total*100)
     off_rate = round(offline / total * 100)
@@ -25,9 +34,9 @@ def VMDeatilsAll(request):
     @param {type} 
     @return: 
     '''
-    allvm = VmDetails.objects.all()
-    
-    return render(request, 'assets/vmall.html', locals())
+    allvm = VmDetailsFilter(request.GET,queryset=VmDetails.objects.all())
+    # allvm = VmDetails.objects.all()
+    return render(request, 'assets/vmall.html', {'allvm' : allvm})
     
 
 def VMDeatilsEachIDC(request,vsphere_comment):

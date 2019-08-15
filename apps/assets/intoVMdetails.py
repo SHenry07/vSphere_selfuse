@@ -1,3 +1,10 @@
+'''
+@Description: 
+@Author: Henry Sun
+@Date: 2019-08-07 14:11:06
+@LastEditors: Henry Sun
+@LastEditTime: 2019-08-14 20:26:36
+'''
 from __future__ import absolute_import
 import re
 import logging
@@ -35,9 +42,9 @@ def IntoVmDetails(vsphere_comment,vm_name,vm_ip,vm_passwd,disk_size,instance_UUI
         data.disk_size = disk_size
         data.vm_guest_os_name = Template[:-8]
         data.vm_instance_UUID = instance_UUID
-        data.powerstate = powerstate
-        data.vm_tools = "guestToolsRunning"
-        data.NICstate = "连接"
+        data.powerstate = "On" if powerstate == "poweredOn" else "Off"
+        data.vm_tools = "On"
+        data.NICstate = "On"
         data.save()
         data.tags.add("saltstack","zabbix")
         data.save()
@@ -54,8 +61,8 @@ def CronUpdateVMdetails():
     密码功能没有添加 vmtools判断问题
     string vim要求的管理类型详见APIcontent = si.RetrieveContent()
     '''    
-    # for idc in Vsphere.objects.all():
-    for idc in Vsphere.objects.filter(vsphere_comment='9f'):
+    for idc in Vsphere.objects.all():
+    # for idc in Vsphere.objects.filter(vsphere_comment='pbs'):
         host = idc.vsphere_host
         user = idc.vsphere_username
         pwd  = idc.vsphere_password
@@ -97,16 +104,13 @@ def CronUpdateVMdetails():
                             a = a + value
                         disk_size += int(a) /1024/1024
 
-                    vm_tools = result[0]["vmtools"]
-                    powerstate = result[0]['powerstate']
-                    NICstate = "关闭"
-                    if powerstate == "poweredOn":
+                    vm_tools = "On" if result[0]["vmtools"] == "guestToolsRunning" else "Off"
+                    powerstate = "On" if result[0]['powerstate'] == "poweredOn" else "Off"
+                    NICstate = "Off"
+                    if powerstate == "On":
                         for nic in result[2].values():
                             connnectstate = nic[0]
-                            if not connnectstate:
-                                NICstate = "未启用"
-                            else:
-                                NICstate = "连接"
+                            NICstate = "Unused" if not connnectstate else "On"
                     logging.info("name: %s 电源状态 %s 网卡状态: %s" % (result[0]['name'],powerstate,
                                                                 NICstate))       
 
@@ -147,18 +151,15 @@ def CronUpdateVMdetails():
                         disk_size += int(a) /1024/1024
                     data.disk_size = disk_size
 
-                    data.vm_tools = result[0]["vmtools"]
-                    data.powerstate = result[0]['powerstate']
                     data.vm_guest_os_name = result[0]['guest OS name']
                     data.vm_instance_UUID = result[0]['instance UUID']
-                    data.NICstate = "关闭"
-                    if data.powerstate == "poweredOn":
+                    data.vm_tools = "On" if result[0]["vmtools"] == "guestToolsRunning" else "Off"
+                    data.powerstate = "On" if result[0]['powerstate'] == "poweredOn" else "Off"
+                    data.NICstate = "Off"
+                    if data.powerstate == "On":
                         for nic in result[2].values():
                             connnectstate = nic[0]
-                            if not connnectstate:
-                                data.NICstate = "未启用"
-                            else:
-                                data.NICstate = "连接"
+                            data.NICstate = "Unused" if not connnectstate else "On"
                     logging.info("name: %s 电源状态 %s 网卡状态: %s" % (result[0]['name'],data.powerstate,
                                                                     data.NICstate))       
 

@@ -3,6 +3,7 @@ FROM 192.168.100.235/python/python:3.7.3-alpine3.9
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories; \
 sed -i '$a */30 * * * * root python3 /apply/cmdb/manage.py ldap_sync_users' /etc/crontab;\
+sed -i '$a * 2 * * * root python3 /apply/cmdb/apps/cronupdatevmdb.py' /etc/crontab;\
 apk update; \
 apk add --no-cache  gcc musl-dev mysql-dev libffi-dev build-base openldap-dev  python3-dev
 

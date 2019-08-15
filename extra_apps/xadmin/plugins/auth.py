@@ -1,3 +1,10 @@
+'''
+@Description: 
+@Author: Henry Sun
+@Date: 2019-08-13 21:40:35
+@LastEditors: Henry Sun
+@LastEditTime: 2019-08-14 21:13:02
+'''
 # coding=utf-8
 from django import forms
 from django.contrib.auth.forms import (UserCreationForm, UserChangeForm,
@@ -63,7 +70,7 @@ class UserAdmin(object):
     list_filter = ('is_staff', 'is_superuser', 'is_active')
     search_fields = ('username', 'first_name', 'last_name', 'email')
     ordering = ('username',)
-    style_fields = {'user_permissions': 'm2m_transfer'}
+    style_fields = {'user_permissions': 'm2m_transfer','groups': 'm2m_transfer'}
     model_icon = 'fa fa-user'
     relfield_style = 'fk-ajax'
 
