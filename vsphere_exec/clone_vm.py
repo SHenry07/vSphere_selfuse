@@ -11,10 +11,7 @@ import logging ; logging.basicConfig(level=logging.INFO)
 from pyVmomi import vim
 import atexit
 
-#from add_nic_to_vm import add_nic
 from .add_disk_to_vm import add_disk
-# from .getvnicinfo import GetVMNics
-#import get_args
 
 class CloneError(Exception):
     pass
@@ -103,14 +100,14 @@ def clone_vm(
     guestname = vm_name
     # hostName = vim.vm.customization.FixedName(guestname)
     identity = vim.vm.customization.LinuxPrep()
-    identity.domain = "mysteel.com"
+    identity.domain = "xxx.com"
     identity.timeZone = "Asia/Shanghai"
     identity.hwClockUTC = False
     identity.hostName = vim.vm.customization.FixedName()
     identity.hostName.name = guestname
 
     dns = vim.vm.customization.GlobalIPSettings()
-    dns.dnsSuffixList = "mysteel.com"
+    dns.dnsSuffixList = "xxx.com"
     dns.dnsServerList = "172.17.2.224"
     globalIPSettings = dns
 
@@ -163,8 +160,6 @@ def clone_vm(
     clonespec.location = relospec
     clonespec.powerOn = False
 
-    # logging.info("克隆最终配置: {}" .format(clonespec))
-
     vm_name = vm_name[3:]
     vm_name = "%s(%s)" %(vm_name,vm_ip) 
 
@@ -186,10 +181,7 @@ def clone_vm(
             nic_spec.device = device
             portgroup = get_obj(content,
                          [vim.dvs.DistributedVirtualPortgroup], Vlan)
-    # dvs = portgroup.config.distributedVirtualSwitch
-    # portKey = search_port(dvs, portgroup.key)
-    # port = port_find(dvs, portKey)
-        
+
             dvs_port_connection = vim.dvs.PortConnection()
             dvs_port_connection.portgroupKey = portgroup.key
             dvs_port_connection.switchUuid = \
@@ -218,35 +210,3 @@ def clone_vm(
 
     task_poweron = vm.PowerOnVM_Task()
     return wait_for_task(task_poweron,vm_name)
-
-
-
-
-
-    
-
- 
-    
-
-# def search_port(dvs, portgroupkey):
-#     search_portkey = []
-#     criteria = vim.dvs.PortCriteria()
-#     criteria.connected = False
-#     criteria.inside = True
-#     criteria.portgroupKey = portgroupkey
-#     ports = dvs.FetchDVPorts(criteria)
-#     for port in ports:
-#         search_portkey.append(port.key)
-#     return search_portkey[0]
-
-
-# def port_find(dvs, key):
-#     obj = None
-#     ports = dvs.FetchDVPorts()
-#     for c in ports:
-#         if c.key == key:
-#             obj = c
-#     return obj
-
-
-

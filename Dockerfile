@@ -1,4 +1,4 @@
-FROM 192.168.100.235/python/python:3.7.3-alpine3.9
+FROM python:3.7.3
 
 
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.ustc.edu.cn/g' /etc/apk/repositories; \

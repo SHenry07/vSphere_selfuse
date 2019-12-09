@@ -29,10 +29,6 @@ sys.path.insert(0, os.path.join(BASE_DIR, 'extra_apps'))
 sys.path.insert(0, os.path.join(BASE_DIR, 'libs'))
 sys.path.insert(0, os.path.join(BASE_DIR, 'configs'))
 
-# config = configparser.ConfigParser()
-# config.read(os.path.join(BASE_DIR, 'cmdb.conf'))
-# IP = config.get('base', 'ip')
-# PORT = config.get('base', 'port')
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
@@ -65,7 +61,6 @@ INSTALLED_APPS = [
     'reversion',
     'django.conf',
     'django_filters',
-
 ]
 
 
@@ -112,10 +107,10 @@ DATABASES = {
         # 'HOST': '192.168.100.227',
         # 'PORT': '5432',
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'django',
-        'USER': 'mysteel',
-        'PASSWORD':'mysteel123',  
-        'HOST': '192.168.100.227',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD':'',  
+        'HOST': '',
         'OPTIONS': {
             'init_command': 'SET default_storage_engine=INNODB;'
         }
